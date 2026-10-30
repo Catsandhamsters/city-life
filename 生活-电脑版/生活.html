@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>生活 · 兽都三十天</title>
+<style>
+  :root{
+    --bg:#12101a;
+    --panel:rgba(255,255,255,.05);
+    --line:rgba(255,255,255,.12);
+    --txt:#efeaf5;
+    --dim:#a8a2bb;
+    --acc:#ffb454;
+    --ok:#7ee0a8;
+    --bad:#ff7a86;
+    --shadow:0 10px 30px rgba(0,0,0,.45);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(900px 520px at 15% -12%, rgba(255,180,84,.17), transparent 62%),
+      radial-gradient(800px 480px at 86% 2%, rgba(150,120,255,.15), transparent 60%),
+      linear-gradient(180deg,#12101a,#100e17 60%,#0b0910);
+    color:var(--txt);
+    font-family:system-ui,-apple-system,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;
+    font-size:15px;line-height:1.62;min-height:100vh;
+    padding:14px 12px 34px;
+  }
+  .wrap{max-width:1120px;margin:0 auto;}
+  h1,h2{margin:0;}
+
+  .topbar{
+    display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:10px 14px;box-shadow:var(--shadow);
+  }
+  .brand{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;}
+  .brand b{font-size:17px;letter-spacing:.4px;}
+  .brand span{font-size:12px;color:var(--dim);}
+  .clock{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;}
+  .chip{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:999px;padding:4px 11px;}
+  .chip.acc{border-color:rgba(255,180,84,.5);color:#ffd79b;}
+  .sys-btns{display:flex;gap:8px;flex-wrap:wrap;}
+  .sys-btns button{
+    background:rgba(255,255,255,.06);color:var(--txt);border:1px solid var(--line);
+    border-radius:10px;padding:6px 12px;font-size:13px;cursor:pointer;font-family:inherit;transition:.18s;
+  }
+  .sys-btns button:hover{background:rgba(255,255,255,.14);transform:translateY(-1px);}
+
+  .grid{display:grid;grid-template-columns:1.3fr 1fr;gap:14px;margin-top:14px;}
+  @media (max-width:900px){.grid{grid-template-columns:1fr;}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);}
+
+  .hero{
+    display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;
+    border-radius:14px;padding:14px;border:1px solid rgba(255,180,84,.3);
+    background:linear-gradient(180deg,rgba(255,180,84,.09),rgba(255,255,255,.02));
+  }
+  .face{
+    width:76px;height:76px;border-radius:18px;display:grid;place-items:center;font-size:40px;
+    background:rgba(255,255,255,.07);border:1px solid var(--line);
+  }
+  .heroInfo{min-width:0;}
+  .heroName{font-size:18px;font-weight:700;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;}
+  .heroName em{font-style:normal;font-size:12px;color:var(--dim);font-weight:400;}
+  .heroRole{font-size:12.5px;color:var(--dim);}
+  .trait{margin-top:6px;font-size:11.5px;color:#ffd79b;}
+
+  .stats{margin-top:13px;display:flex;flex-direction:column;gap:8px;}
+  .st{display:grid;grid-template-columns:52px 1fr 58px;gap:9px;align-items:center;font-size:11.5px;}
+  .st .lb{color:var(--dim);}
+  .st .vl{text-align:right;color:#dad4e8;font-variant-numeric:tabular-nums;}
+  .bar{height:8px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden;}
+  .bar i{display:block;height:100%;border-radius:999px;transition:width .45s cubic-bezier(.2,.8,.2,1);}
+  .bar .f1{background:linear-gradient(90deg,#6fd3ff,#7ee0a8);}
+  .bar .f2{background:linear-gradient(90deg,#ffcf6b,#ff9f43);}
+  .bar .f3{background:linear-gradient(90deg,#b79bff,#8f7bff);}
+  .bar .f4{background:linear-gradient(90deg,#ff9ec4,#ff6f9c);}
+  .bar .f8{background:linear-gradient(90deg,#b6f09c,#7ee0a8);}
+  .bar .f5{background:linear-gradient(90deg,#ffd76b,#ff8f5a);}
+  .bar .f6{background:linear-gradient(90deg,#7ee0ff,#5fb9ff);}
+  .bar .f7{background:linear-gradient(90deg,#ffa1c8,#ff6f9c);}
+  .bar .f9{background:linear-gradient(90deg,#8ff0dc,#4fc9d8);}
+
+  .wallet{
+    margin-top:13px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+    border-top:1px dashed var(--line);padding-top:11px;
+  }
+  .money{font-size:14px;color:#ffd79b;font-variant-numeric:tabular-nums;}
+  .money b{font-size:19px;}
+  .money.neg{color:var(--bad);}
+  .goalwrap{flex:1 1 180px;min-width:150px;}
+  .goalwrap .lb{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-bottom:4px;}
+  .goalwrap .bar{height:8px;}
+  .goalwrap .bar i{background:linear-gradient(90deg,#7ee0a8,#ffd79b);}
+
+  .secTitle{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
+  .secTitle h2{font-size:14px;letter-spacing:.3px;}
+  .secTitle .hint{font-size:11.5px;color:var(--dim);}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  @media (max-width:600px){.actions{grid-template-columns:1fr;}}
+  .act{
+    text-align:left;cursor:pointer;border-radius:13px;padding:11px 12px;
+    background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));
+    border:1px solid var(--line);color:var(--txt);font-family:inherit;font-size:13.5px;transition:.18s;
+  }
+  .act:hover:not([disabled]){transform:translateY(-2px);border-color:rgba(255,255,255,.3);}
+  .act[disabled]{opacity:.34;cursor:not-allowed;}
+  .act .an{font-weight:700;display:block;}
+  .act .ad{font-size:11.5px;color:var(--dim);margin-top:3px;display:block;}
+  .act .ef{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+  .ef span{font-size:10.5px;padding:1.5px 7px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid var(--line);}
+  .ef .plus{color:#8ff0b6;border-color:rgba(143,240,182,.35);}
+  .ef .minus{color:#ff9aa5;border-color:rgba(255,154,165,.32);}
+  .ef .win{color:#c9b6ff;border-color:rgba(201,182,255,.34);}
+  .act.tag{background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(255,255,255,.02));}
+  .act.key{border-color:rgba(255,212,140,.5);}
+  .act.subopen{border-color:rgba(255,212,140,.9);background:linear-gradient(180deg,rgba(255,180,84,.16),rgba(255,255,255,.03));}
+  .submenu{grid-column:1 / -1;border:1px dashed rgba(255,212,140,.42);border-radius:13px;padding:10px 11px;background:rgba(255,180,84,.06);}
+  .submenu .sh{font-size:11.5px;color:var(--dim);margin-bottom:8px;}
+  .submenu .subopts{display:flex;flex-wrap:wrap;gap:8px;}
+  .act.sub{flex:1 1 158px;background:rgba(255,255,255,.05);border-style:dashed;}
+  .act.sub.cancel{flex:0 0 auto;background:transparent;}
+
+  .logbox{max-height:420px;overflow-y:auto;padding-right:4px;}
+  .logbox::-webkit-scrollbar{width:6px;}
+  .logbox::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:999px;}
+  .le{border-left:2px solid rgba(255,255,255,.14);padding:6px 0 6px 10px;margin-bottom:8px;font-size:12.8px;}
+  .le .meta{font-size:10.5px;color:var(--dim);margin-bottom:2px;}
+  .le.act{border-color:rgba(255,180,84,.55);}
+  .le.evt{border-color:rgba(184,155,255,.6);}
+  .le.day{border-color:rgba(126,224,168,.6);}
+  .le.mind{border-color:rgba(255,143,180,.6);color:#e8dee6;font-style:italic;}
+  .deltas{margin-top:4px;display:flex;flex-wrap:wrap;gap:5px;}
+  .deltas span{font-size:10.5px;padding:1px 7px;border-radius:999px;background:rgba(255,255,255,.07);}
+
+  .tip{margin-top:12px;font-size:11.5px;color:var(--dim);border-top:1px dashed var(--line);padding-top:10px;}
+  .tip b{color:#ffd79b;font-weight:600;}
+
+  .overlay{
+    position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:18px;
+    background:rgba(8,7,12,.8);backdrop-filter:blur(6px);overflow-y:auto;
+  }
+  .overlay.hide{display:none;}
+  .modal{
+    width:min(780px,100%);max-height:90vh;overflow-y:auto;border-radius:20px;padding:22px;
+    background:linear-gradient(180deg,#211d2d,#161320);border:1px solid var(--line);box-shadow:var(--shadow);
+  }
+  .modal h2{font-size:21px;margin-bottom:6px;}
+  .modal .sub{color:var(--dim);font-size:13px;margin-bottom:16px;}
+  .pickGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px;}
+  .pick{
+    cursor:pointer;text-align:left;font-family:inherit;color:var(--txt);border-radius:14px;padding:12px;
+    background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+    border:1px solid var(--line);transition:.18s;
+  }
+  .pick:hover{transform:translateY(-2px);border-color:rgba(255,180,84,.55);}
+  .pick.sel{border-color:rgba(255,180,84,.85);background:linear-gradient(180deg,rgba(255,180,84,.14),rgba(255,255,255,.02));}
+  .pick .pe{font-size:26px;}
+  .pick .pn{font-weight:700;font-size:14px;margin-top:4px;}
+  .pick .pd{font-size:11.5px;color:var(--dim);margin-top:4px;}
+  .pick .pt{font-size:11px;color:#ffd79b;margin-top:6px;}
+  .btnrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;}
+  .btn{
+    cursor:pointer;font-family:inherit;font-size:14px;padding:10px 18px;border-radius:12px;
+    border:1px solid var(--line);background:rgba(255,255,255,.08);color:var(--txt);transition:.18s;
+  }
+  .btn:hover{transform:translateY(-2px);background:rgba(255,255,255,.15);}
+  .btn.pri{background:linear-gradient(180deg,#ffcf7a,#ffab3d);color:#221a09;border-color:transparent;font-weight:700;}
+  .btn.ghost{background:transparent;}
+  .rules{font-size:13px;color:#cbc5d9;padding-left:18px;}
+  .rules li{margin-bottom:6px;}
+  .endTitle{font-size:24px;margin-bottom:8px;}
+  .endDesc{font-size:14px;color:#d6cfe4;margin-bottom:16px;}
+  .endStats{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px;margin-bottom:18px;}
+  .es{border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.05);border:1px solid var(--line);font-size:12.5px;}
+  .es b{display:block;color:#ffd79b;font-size:16px;font-variant-numeric:tabular-nums;}
+  .es span{color:var(--dim);}
+  .footer{margin-top:16px;text-align:center;font-size:11.5px;color:#6f6a80;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="brand"><b>生活</b><span>兽都三十天 · 单视角</span></div>
+    <div class="clock">
+      <span class="chip" id="dayChip">第 1 天</span>
+      <span class="chip acc" id="slotChip">00:00</span>
+    </div>
+    <div class="sys-btns">
+      <button type="button" id="btnSave">存档</button>
+      <button type="button" id="btnLoad">读档</button>
+      <button type="button" id="btnHelp">玩法</button>
+      <button type="button" id="btnRestart">重开</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="panel">
+        <div class="secTitle">
+          <h2>我自己</h2>
+          <span class="hint" id="stateHint"></span>
+        </div>
+        <div class="hero">
+          <div class="face" id="heroFace">🐺</div>
+          <div class="heroInfo">
+            <div class="heroName" id="heroName">灰狼 <em>便利店夜班店员</em></div>
+            <div class="heroRole" id="heroRole">兽都南城 · 合租屋 502</div>
+            <div class="trait" id="heroTrait"></div>
+          </div>
+        </div>
+
+        <div class="stats">
+          <div class="st"><span class="lb">体力</span><span class="bar"><i class="f1" id="barStamina" style="width:100%"></i></span><span class="vl" id="valStamina">100/100</span></div>
+          <div class="st"><span class="lb">心情</span><span class="bar"><i class="f2" id="barMood" style="width:60%"></i></span><span class="vl" id="valMood">60/100</span></div>
+          <div class="st"><span class="lb">声望</span><span class="bar"><i class="f3" id="barFame" style="width:20%"></i></span><span class="vl" id="valFame">20/100</span></div>
+          <div class="st"><span class="lb">技能</span><span class="bar"><i class="f4" id="barSkill" style="width:0%"></i></span><span class="vl" id="valSkill">0/30</span></div>
+        </div>
+
+        <div class="secTitle" style="margin-top:14px;margin-bottom:8px">
+          <h2 style="font-size:13px">生理需求</h2>
+          <span class="hint">饱食 / 清洁 越高越好，困倦 / 急迫 / 膀胱 越低越好</span>
+        </div>
+        <div class="stats" style="margin-top:0">
+          <div class="st"><span class="lb">饱食</span><span class="bar"><i class="f8" id="barFull" style="width:70%"></i></span><span class="vl" id="valFull">70/100</span></div>
+          <div class="st"><span class="lb">困倦</span><span class="bar"><i class="f5" id="barSleepy" style="width:20%"></i></span><span class="vl" id="valSleepy">20/100</span></div>
+          <div class="st"><span class="lb">清洁</span><span class="bar"><i class="f6" id="barClean" style="width:80%"></i></span><span class="vl" id="valClean">80/100</span></div>
+          <div class="st"><span class="lb">如厕</span><span class="bar"><i class="f7" id="barBladder" style="width:10%"></i></span><span class="vl" id="valBladder">10/100</span></div>
+          <div class="st"><span class="lb">膀胱</span><span class="bar"><i class="f9" id="barBladderFill" style="width:10%"></i></span><span class="vl" id="valBladderFill">10/100</span></div>
+        </div>
+
+        <div class="wallet">
+          <div class="money" id="moneyBox">存款 <b>0</b> 元　·　日支出 130</div>
+          <div class="goalwrap">
+            <div class="lb"><span>攒钱进度（目标 2400）</span><span id="goalPct">0%</span></div>
+            <span class="bar"><i id="goalFill" style="width:0%"></i></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:14px">
+        <div class="secTitle">
+          <h2 id="actTitle">现在能做什么</h2>
+          <span class="hint">每次行动占 1 小时 · 消耗体力</span>
+        </div>
+        <div class="actions" id="actBox"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="secTitle">
+        <h2>独白与记录</h2>
+        <span class="hint" id="logCount"></span>
+      </div>
+      <div class="logbox" id="logBox"></div>
+    </div>
+  </div>
+
+  <div class="footer">单文件离线游戏 · 进度保存在浏览器本地</div>
+</div>
+
+<div class="overlay" id="startOverlay">
+  <div class="modal">
+    <h2>生活</h2>
+    <div class="sub">兽都南城的出租屋，房租单贴在冰箱上。你只有一个人、一张排班表，和看不到头的日子。先选，你是谁。</div>
+    <div class="pickGrid" id="pickGrid"></div>
+    <div class="btnrow">
+      <button class="btn pri" type="button" id="btnStart">开始这段日子</button>
+      <button class="btn" type="button" id="btnLoad2">读取存档</button>
+      <button class="btn ghost" type="button" id="btnHelp2">玩法说明</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hide" id="helpOverlay">
+  <div class="modal">
+    <h2>玩法说明</h2>
+    <div class="sub">你操作的是同一位兽人主角，全程只有这一个视角。</div>
+    <ul class="rules">
+      <li><b>一天 24 小时</b>：每天从 0:00 开始，每做一个决定时间 +1 小时，走到 24:00 自动进入日结算。有些行动只在特定钟点开放，卡片上会标出时间段（例如早市代购是 05:00–11:00，夜班是 17:00–05:00）。</li>
+      <li><b>生理需求</b>：饱食度、清洁度越高越好，困倦度、如厕急迫度、膀胱充盈度越低越好。它们每小时都在变化，靠吃饭、洗澡、睡觉、上厕所补回来；需求条的上限是 100，个别兽人的某些需求上限会更高（例如棕熊的如厕急迫、膀胱充盈上限都 +20%，条子能到 120，告急线也跟着后移）。</li>
+      <li><b>上洗手间</b>：点「去趟洗手间」会展开两个子选项——「上大号」把如厕急迫度压掉九成，「上小号」把膀胱充盈度直接清零；两个都不占时间，时间不推进、这一小时的需求衰减与剧痛结算也一并跳过，也可以点「先不去」取消。膀胱充盈度涨得最快（每小时 +4），一旦憋到 <b>100%</b> 就会当场失禁：充盈清零，清洁度同时跌到 <b>0</b>，只能靠洗澡补回来。</li>
+      <li><b>憋尿提示</b>：膀胱充盈度会分三档提醒——到 <b>50%</b> 提示「尿意」、到 <b>70%</b> 提示「尿急」、到 <b>90%</b> 提示「快憋不住」，顶栏也同步显示当前档次。每档只在第一次跨上去时响一次，上过小号或者失禁之后会重新计数。</li>
+      <li><b>需求见底</b>：某条需求长期没人管，日结算会额外扣心情（清洁差还会掉声望、饿着会掉体力）；连续三天都有需求告急，身体会先垮掉，游戏提前结束。膀胱充盈度不参与这条连续三天判定，它有自己的失禁结算。</li>
+      <li><b>体力</b>：行动耗费体力，不够时高消耗选项会被锁住；补觉一类的行动用来回血。</li>
+      <li><b>心情</b>：日结算自然掉 3 点。连续三天掉到 0 就得去医院，游戏提前收场。</li>
+      <li><b>存款</b>：每天固定扣 130（房租 80、水电与餐费 50）。欠到 -200 元会直接结束。</li>
+      <li><b>买房</b>：行动列表里一直有「买下一间自己的房子」，存款攒够 <b>30000</b> 元才解锁，没攒够时按钮是锁着的、会写明还差多少。买过之后房子归你，每天的支出只剩水电与餐费 <b>50</b> 元，那 <b>80</b> 元房租一笔都不用再交；房子买过一次，选项就消失。</li>
+      <li><b>声望 / 技能</b>：工作类行动涨声望，练习类涨技能，决定你能不能升职。</li>
+      <li><b>随机事件</b>：每次行动后有小概率发生，遇到什么全看兽都那天的脸色。</li>
+      <li><b>种族天赋</b>：不同兽人的收益、消耗效率与体质上限不同，开局选谁会影响整条路线的打法。</li>
+    </ul>
+    <div class="btnrow"><button class="btn pri" type="button" id="btnCloseHelp">知道了</button></div>
+  </div>
+</div>
+
+<div class="overlay hide" id="rulesTipOverlay">
+  <div class="modal">
+    <h2>开局提示</h2>
+    <div class="tip">
+      没有天数上限，日子一天一天过下去，每天从 <b>0:00</b> 走到 <b>24:00</b>，每做一个决定时间 <b>+1 小时</b>。存款到 <b>2400</b> 元、声望 ≥ <b>55</b> 且心情 ≥ <b>30</b>，当天结算时就会盘下老城区那间小店面，弹一条提示、日子照旧过下去，本局不收尾；声望 ≥ <b>85</b> 且技能 ≥ <b>22</b> 会走升职路线，同样弹一条提示、日子继续，本局也不收尾。心情连续三天见底会进兽医诊室，欠债到 <b>-200</b> 元只能连夜跑路；<b>饱食、困倦、清洁、如厕</b>四条需求连续三天没人管，身体会先垮掉。膀胱充盈度不在这条判定里——它到 <b>50%</b> 会警告「尿意」、<b>70%</b> 警告「尿急」、<b>90%</b> 警告「快憋不住」，憋到 <b>100%</b> 就直接失禁，充盈清零、清洁度同时跌到 <b>0</b>。去洗手间要先挑大号还是小号：大号把如厕急迫压掉九成，小号把膀胱充盈清零。行动里一直有<b>买房</b>这一项，存款攒够 <b>30000</b> 元才会解锁（没攒够时是锁着的）：买下来之后房子归你，每天那 <b>80</b> 元房租不用再交，只剩水电和餐费。
+    </div>
+    <div class="btnrow"><button class="btn pri" type="button" id="btnTipOk">知道了</button></div>
+  </div>
+</div>
+
+<div class="overlay hide" id="endOverlay">
+  <div class="modal">
+    <h2 class="endTitle" id="endTitle">结局</h2>
+    <div class="endDesc" id="endDesc"></div>
+    <div class="endStats" id="endStats"></div>
+    <div class="btnrow"><button class="btn pri" type="button" id="btnAgain">再来一次</button></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // 没有天数上限：日子一直过下去，攒够小店目标只给一条提示，撑不住时才收尾
+  var GOAL_MONEY = 2400;
+  var MAX_SKILL = 30;
+  var DAILY_COST = 130;                     // 房租 + 水电 + 餐费
+  var RENT_COST = 80;                       // 其中房租部分：买了房就不用再交
+  var LIVING_COST = DAILY_COST - RENT_COST; // 其中水电 + 餐费：买了房照旧要花
+  var HOUSE_PRICE = 30000;                  // 南城一间小房子的价钱
+  var EGG_MONEY = 20000;                    // 彩蛋门槛：有了自己的房子后再攒到这个数，「装修更好的小店」才会出现
+  var SAVE_KEY = "furry-work-solo-save-v2";
+  var HOURS_PER_DAY = 24;
+
+  // 一天 24 小时，每完成一次行动推进 1 小时；行动按钟点开放：00:00-04:59 / 05:00-10:59 / 11:00-16:59 / 17:00-23:59
+  var BANDS = [
+    { id: 0, from: 0, to: 5 },
+    { id: 1, from: 5, to: 11 },
+    { id: 2, from: 11, to: 17 },
+    { id: 3, from: 17, to: 24 }
+  ];
+
+  // 生理需求：饱食度 / 清洁度（越高越好），困倦度 / 如厕急迫度 / 膀胱充盈度（越高越糟）
+  var NEEDS = [
+    { key: "full",        name: "饱食度",     bar: "barFull",        val: "valFull",        good: true,  start: 70 },
+    { key: "sleepy",      name: "困倦度",     bar: "barSleepy",      val: "valSleepy",      good: false, start: 20 },
+    { key: "clean",       name: "清洁度",     bar: "barClean",       val: "valClean",       good: true,  start: 80 },
+    { key: "bladder",     name: "如厕急迫度", bar: "barBladder",     val: "valBladder",     good: false, start: 10 },
+    { key: "bladderFill", name: "膀胱充盈度", bar: "barBladderFill", val: "valBladderFill", good: false, start: 10 }
+  ];
+  var NEED_DECAY = { full: -3, sleepy: 3, clean: -2, bladder: 3, bladderFill: 4 };
+  var NEED_DANGER = 15;
+  var PAIN_MOOD_LOSS = 1;                   // 剧痛（如厕急迫度顶到上限 / 逆流期间）每小时磨掉的心情
+  // 逆流：膀胱充盈度顶到 98% 以上，每小时有一次 0.1% 的判定。触发就回落一截，并单独出一次
+  // 独白、记录与剧痛提示（这一股疼跟如厕急迫度顶到上限的剧痛是两回事）。充盈度掉到 10% 以下
+  // 逆流自行退散；累计超过 2 次，身体直接垮掉。
+  var REFLUX_PCT = 98;                      // 触发门槛：膀胱充盈度占上限的百分比
+  var REFLUX_CHANCE = 0.001;                // 触发概率：0.1%
+  var REFLUX_DRAIN = 10;                    // 每次触发：充盈度按上限的百分比回落
+  var REFLUX_CLEAR = 10;                    // 充盈度低于上限的这个百分比时，逆流消失
+  var REFLUX_LIMIT = 2;                     // 逆流累计超过这个次数，直接触发「身体垮掉」结局
+
+  // 膀胱充盈度的三档提示：到 50% 尿意、70% 尿急、90% 快憋不住，每档只在第一次跨上去时响一次
+  var BLADDER_WARN = [
+    { pct: 50, hint: "尿意上来了", text: "一阵尿意慢慢泛上来，你下意识夹了夹腿。" },
+    { pct: 70, hint: "尿急，先找个洗手间", text: "尿急得挺明显，走路都在留意哪儿有洗手间。" },
+    { pct: 90, hint: "快憋不住了", text: "快憋不住了，小腹坠胀顶得你直不起腰。" }
+  ];
+
+  var SPECIES = [
+    { id: "wolf", name: "灰狼", emoji: "🐺", role: "便利店夜班店员", place: "兽都南城 · 合租屋 502",
+      desc: "干夜班的狼，手速快、话少，腰不太好。",
+      trait: "天赋：夜间工作收入 +15%",
+      base: { stamina: 105, max: 105, mood: 60, money: 1100, fame: 20, skill: 0 },
+      mod: { fame: 1.0, skill: 1.0, cost: 1.0, moodLoss: 1.0, nightMoney: 1.15 } },
+
+    { id: "fox", name: "赤狐", emoji: "🦊", role: "便利店夜班店员", place: "兽都南城 · 合租屋 502",
+      desc: "会说话也肯干活，客人记得住这张脸。",
+      trait: "天赋：声望获取 +30%",
+      base: { stamina: 100, max: 100, mood: 60, money: 950, fame: 26, skill: 0 },
+      mod: { fame: 1.3, skill: 1.0, cost: 1.0, moodLoss: 1.0, nightMoney: 1.0 } },
+
+    { id: "rabbit", name: "垂耳兔", emoji: "🐰", role: "便利店夜班店员", place: "兽都南城 · 合租屋 502",
+      desc: "胆子小，但恢复得快，笑一笑就能撑下去。",
+      trait: "天赋：受挫时心情损耗减半",
+      base: { stamina: 95, max: 95, mood: 72, money: 1000, fame: 20, skill: 0 },
+      mod: { fame: 1.0, skill: 1.0, cost: 1.0, moodLoss: 0.5, nightMoney: 1.0 } },
+
+    { id: "cat", name: "花猫", emoji: "🐱", role: "便利店夜班店员", place: "兽都南城 · 合租屋 502",
+      desc: "上手极快，学什么都比同事早半步。",
+      trait: "天赋：技能获取 +40%",
+      base: { stamina: 92, max: 92, mood: 62, money: 900, fame: 20, skill: 3 },
+      mod: { fame: 1.0, skill: 1.4, cost: 1.0, moodLoss: 1.0, nightMoney: 1.0 } },
+
+    { id: "bear", name: "棕熊", emoji: "🐻", role: "便利店夜班店员", place: "兽都南城 · 合租屋 502",
+      desc: "力气大，能连着顶好几个夜班，存钱也慢。",
+      trait: "天赋：体力上限更高、行动消耗 -15%、如厕急迫与膀胱充盈上限 +20%",
+      base: { stamina: 120, max: 120, mood: 58, money: 1000, fame: 18, skill: 0 },
+      mod: { fame: 1.0, skill: 1.0, cost: 0.85, moodLoss: 1.0, nightMoney: 1.0, needCap: { bladder: 1.2, bladderFill: 1.2 } } }
+  ];
+
+  var ACTIONS = [
+    // 00:00-10:59
+    { w: [0, 1], id: "sleep", name: "补个回笼觉", desc: "窗帘拉严，把自己卷成一团睡死过去。", tag: 1,
+      eff: { stamina: 30, mood: 5, sleepy: -30 } },
+    { w: [1], id: "run", name: "沿河堤晨跑", desc: "跑完连耳朵都是热的。",
+      eff: { stamina: -10, skill: 2, mood: 3, clean: -6 } },
+    { w: [1], id: "market", name: "接一单早市代购", desc: "帮邻居兽带菜，赚点跑腿费。", minDay: 2,
+      eff: { stamina: -14, money: 70, mood: -2 } },
+    { w: [1, 2], id: "manual", name: "背新品手册", desc: "把三十种饮料的配料表记进脑子里。",
+      eff: { stamina: -8, skill: 3, fame: 1 } },
+
+    // 11:00-16:59
+    { w: [2], id: "shift", name: "便利店午班", desc: "补货、结账，替店长挡掉推销员。",
+      eff: { stamina: -16, money: 95, fame: 4, skill: 1, mood: -3 } },
+    { w: [2, 3], id: "deliver", name: "跑外卖", desc: "兽都的电梯永远在坏，楼梯永远有八层。",
+      eff: { stamina: -22, money: 150, mood: -6, fame: 1, clean: -6 } },
+    { w: [0, 1, 2, 3], id: "edit", name: "在家剪视频", desc: "把夜班的废片剪成段子发出去。",
+      eff: { stamina: -10, skill: 2, mood: 4, fame: 2 } },
+    { w: [2, 3], id: "nap", name: "午后补一觉", desc: "定好闹钟，然后没听见。", tag: 1,
+      eff: { stamina: 18, mood: 2, sleepy: -18 } },
+    { w: [2], id: "parttime", name: "甜品店帮工", desc: "老城区的甜品店缺人手，戴着干净的手套挤奶油。", minDay: 3,
+      eff: { stamina: -15, money: 110, skill: 2, mood: 1 } },
+
+    // 17:00-23:59 / 跨夜
+    { w: [3, 0], id: "night", name: "便利店夜班", desc: "凌晨两点的兽都，只剩冷柜的灯还醒着。", night: 1,
+      eff: { stamina: -26, money: 170, fame: 5, skill: 2, mood: -5, sleepy: 12 } },
+    { w: [3, 0], id: "live", name: "开直播打游戏", desc: "弹幕说你嘴太毒，但没人走。", fameNeed: 45,
+      eff: { stamina: -12, money: 130, fame: 5, mood: 4, sleepy: 8 } },
+    { w: [1, 2, 3], id: "drill", name: "加练结账手速", desc: "把扫码枪练成一件乐器。",
+      eff: { stamina: -14, skill: 4, fame: 1 } },
+    { w: [3, 0], id: "game", name: "熬夜打游戏", desc: "一局接一局，天亮得很突然。",
+      eff: { stamina: -6, mood: 14, fame: -1, sleepy: 10 } },
+    { w: [2, 3, 0], id: "supper", name: "街边吃碗热汤面", desc: "老板多给了一勺葱花。", tag: 1,
+      eff: { stamina: 12, mood: 8, money: -25, full: 22 } },
+
+    // 生理需求：吃 / 洗 / 睡 / 上洗手间（大号 / 小号）
+    { w: [1, 2, 3], id: "meal", name: "吃顿正经饭", desc: "不是泡面，是有菜有汤的那种。", tag: 1, need: 1,
+      eff: { stamina: 6, mood: 4, money: -18, full: 40 } },
+    { w: [1, 3], id: "bath", name: "冲个热水澡", desc: "热水器又忽冷忽热，但你冲得挺认真。", tag: 1, need: 1,
+      eff: { stamina: -6, mood: 3, money: -10, clean: 45 } },
+    // descOwn：有了自己的房子之后，出租楼里那句「楼道的灯坏了、摸黑过去」就不再出现
+    { w: [0, 1, 2, 3], id: "toilet", name: "去趟洗手间", desc: "楼道的灯坏了一半，你摸黑走过去。", descOwn: "", tag: 1, need: 1,
+      opts: [
+        // noTime：上大号 / 上小号都是不耗时的瞬时行动——时间不推进，也不走这一小时的需求衰减、剧痛结算与随机事件
+        { id: "big", name: "上大号", desc: "隔间门一关，长长地出了口气，如厕那股急迫松掉九成。", noTime: 1,
+          eff: { stamina: 3 }, pct: { bladder: -90 } },
+        { id: "small", name: "上小号", desc: "哗啦一阵，小腹那股胀劲整个卸下去。", noTime: 1,
+          eff: { stamina: 3 }, pct: { bladderFill: -100 } }
+      ] },
+    { w: [3, 0], id: "bigsleep", name: "早点上床睡觉", desc: "把手机扣在桌上，告诉自己明天再说。", tag: 1, need: 1,
+      eff: { stamina: 26, mood: 4, sleepy: -60 } },
+
+    // 攒够 30000 元可以把租的房子买下来，此后每天不再有房租
+    { w: [0, 1, 2, 3], id: "house", name: "买下一间自己的房子", desc: "南城旧楼顶层的一间小屋，采光一般，胜在往后再不用把房租单贴在冰箱门上。", moneyNeed: HOUSE_PRICE, once: "house",
+      eff: { money: -HOUSE_PRICE } },
+
+    // 彩蛋：有了自己的房子、存款又攒到 20000 元，「装修更好的小店」才会出现在行动列表里；
+    // 条件不满足时这一条整个不出现（不是置灰）。点下去直接收尾到「结局 · 转角那间毛茸茸」
+    { w: [0, 1, 2, 3], id: "egg", name: "装修更好的小店", egg: 1,
+      desc: "手头的钱够给那间小店换一套像样的家什了——新的冰柜、暖黄的灯、门口一块亲手写的招牌。",
+      showIf: function () { return state.house && state.money >= EGG_MONEY; } }
+  ];
+
+  var EVENTS = [
+    { id: "tea", text: "熟客留下半杯没喝完的热奶茶，说了句「给你的，尾巴看起来需要」。", bearText: "熟客留下半杯没喝完的热奶茶。", eff: { mood: 5 } },
+    { id: "gossip", text: "同事压低声音八卦店长的头发，你听完一整天都很开心。", eff: { mood: 6, fame: 1 } },
+    { id: "rain", text: "兽都下了场毛毛雨，尾巴尖湿成一撮，一路甩着回家。", bearText: "兽都下了场毛毛雨，一路甩着回家。", eff: { mood: -4 } },
+    { id: "praise", text: "店长路过，扔下一句「辛苦了」，然后头也不回地走了。", eff: { fame: 3, mood: 5 } },
+    { id: "landlord", text: "房东提前来敲门，说热水器换了零件，费用「顺手」算在你头上。", eff: { money: -40, mood: -3 } },
+    { id: "straycat", text: "一只流浪猫蹭在你脚边打呼噜，整条走廊都安静下来。", eff: { mood: 7 } },
+    { id: "paper", text: "便利店的小票机卡纸，你蹲在地上拆了十分钟。", eff: { stamina: -8, mood: -3 } },
+    { id: "glove", text: "手套在搬货时磨破一个洞，露出一点毛。", eff: { money: -30, mood: -3 } },
+    { id: "drunk", text: "深夜来了位喝醉的牛先生，硬塞给你小费，说你长得比牛好看。", eff: { stamina: -6, money: 40, fame: 2 } },
+    { id: "chicken", text: "楼下炸鸡店买一送一，你一个人吃掉了一整桶。", eff: { money: -25, mood: 9 } },
+    { id: "elevator", text: "尾巴被电梯夹了一下。你没叫出声，但眼睛有点湿。", eff: { mood: -6 }, bearHide: 1 },
+    { id: "drillnight", text: "隔壁打了一整晚电钻，第二天耳朵都是软的。", eff: { mood: -5, stamina: -6 } },
+    { id: "granny", text: "下班路上扶了一把摔倒的羊奶奶，她非要给你介绍对象。", eff: { fame: 4, mood: 7 } },
+    { id: "hood", text: "常客说，这家便利店夜里灯很暖，像有人等着。", eff: { mood: 6, fame: 3 } },
+    { id: "overtime", text: "临时排班变动，你替人顶了两小时，多拿了一点加班费。", eff: { stamina: -10, money: 60, fame: 2 } },
+    { id: "sale", text: "超市促销，你囤了一整箱泡面，省下的钱比想象中多。", eff: { money: 45, mood: 3 } },
+    { id: "mistake", text: "结账时算错了一笔钱，你自己垫上了。", eff: { money: -55, mood: -4 } },
+    { id: "friend", text: "老同学打来电话，问你最近怎么样。你说了句「还行」。", eff: { mood: 8 } },
+    { id: "nimble", text: "你顺手帮邻居搬了台洗衣机，对方塞给你一袋水果。", eff: { stamina: -8, money: 25, fame: 3 } },
+    { id: "insomnia", text: "躺下之后怎么也睡不着，盯着天花板数到三百。", eff: { stamina: -5, mood: -3 } }
+  ];
+
+  var MONOLOGUES = [
+    "夜里十一点半，你坐在床沿数今天的钱，数完又数了一遍。",
+    "窗外的兽都还亮着，你想，应该也有很多只兽跟你一样没睡。",
+    "你把明天的排班抄在便签上，贴在冰箱门，正好压住房租单的一角。",
+    "镜子里的自己眼眶有点黑。你揉了揉脸，说，再撑几天。",
+    "楼下有人在唱歌，跑调得厉害，你听着听着笑了。",
+    "你想过要不要回老家。想到一半，闹钟就响了。",
+    "热水器又忽冷忽热，你冲完澡抱着膝盖坐了一会儿。",
+    "数钱的时候发现多了五十块，后来想起来是那天的小费。"
+  ];
+
+  var MILESTONES = {
+    3: function () {
+      logLine("day", "【第 3 天】店长把你叫到仓库，问你要不要学做陈列。");
+      if (state.skill >= 4) {
+        applyEff({ fame: 6, skill: 2 });
+        logLine("day", "你把货架摆得像样张，店长点了点头：「以后这块归你管。」", [{ t: "声望 +6", c: "plus" }, { t: "技能 +2", c: "plus" }]);
+      } else {
+        logLine("day", "你摇了摇头，说先把手上的班顶好。店长也没勉强。");
+      }
+    },
+    6: function () {
+      logLine("day", "【第 6 天】你路过老城区，看见一间转角的小店面贴出了招租。押金 1800，月租 900。");
+      logLine("mind", "你在门口站了很久。玻璃上映出你自己：一只穿着工服的兽，盯着一间空屋子。", [], "mind");
+    },
+    9: function () {
+      logLine("day", "【第 9 天】片区办「夜班之星」评选，店长把你的名字报了上去。");
+      if (state.fame >= 50) {
+        applyEff({ fame: 8, money: 300, mood: 10 });
+        logLine("day", "你上台领了奖，奖金 300 元。台下有人喊你的名字。", [{ t: "声望 +8", c: "plus" }, { t: "金钱 +300", c: "plus" }, { t: "心情 +10", c: "plus" }]);
+      } else {
+        applyEff({ mood: -6 });
+        logLine("day", "名单里没有你。你替得奖的同事鼓了掌，手拍得有点疼。", [{ t: "心情 -6", c: "minus" }]);
+      }
+    },
+    11: function () {
+      if (state.house) {
+        logLine("day", "【第 11 天】房东贴出涨租通知：下季度起每月涨 120。你路过时看了一眼，转身上楼——这栋楼的事跟你没关系了。");
+        return;
+      }
+      logLine("day", "【第 11 天】房东贴出通知：下季度起房每月涨 120，先补三个月。");
+      state.money -= 180;
+      applyEff({ mood: -8 });
+      logLine("day", "你把通知抄进记账本，末尾写了句「还差多少」。", [{ t: "金钱 -180", c: "minus" }, { t: "心情 -8", c: "minus" }]);
+    }
+  };
+
+  var state = null;
+  var curActions = [];
+  var usedEvents = {};
+  var pickedSpecies = "wolf";
+  var endingShown = false;
+  var subOpen = null;
+
+  function el(id) { return document.getElementById(id); }
+  function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+  function sign(n) { return n === 0 ? "±0" : (n > 0 ? "+" : "") + n; }
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+  function timeStr(hour) { return pad2(hour % 24) + ":00"; }
+  function clockLabel(h) { return h === 24 ? "24:00" : pad2(h % 24) + ":00"; }
+  // 把行动开放的钟点段转成「05:00–11:00」这样的显示文本；全天可做的行动返回空串
+  function windowOf(a) {
+    if (!a.w || a.w.length >= BANDS.length) return "";
+    var ids = a.w.slice().sort(function (x, y) { return x - y; });
+    var groups = [[ids[0]]];
+    var last = groups[0];
+    for (var i = 1; i < ids.length; i++) {
+      if (ids[i] === ids[i - 1] + 1) { last.push(ids[i]); }
+      else { last = [ids[i]]; groups.push(last); }
+    }
+    if (groups.length > 1 && groups[0][0] === 0 && last[last.length - 1] === BANDS.length - 1) {
+      var tail = groups.pop();
+      groups[0] = tail.concat(groups[0]);
+    }
+    var out = [];
+    for (var gi = 0; gi < groups.length; gi++) {
+      var g = groups[gi];
+      out.push(clockLabel(BANDS[g[0]].from) + "–" + clockLabel(BANDS[g[g.length - 1]].to));
+    }
+    return out.join("、");
+  }
+  function bandOf(hour) {
+    for (var i = 0; i < BANDS.length; i++) {
+      if (hour >= BANDS[i].from && hour < BANDS[i].to) return BANDS[i];
+    }
+    return BANDS[BANDS.length - 1];
+  }
+  function needCapOf(key) {
+    // 需求上限：默认 100；种族天赋可放宽（棕熊：如厕急迫 / 膀胱充盈上限 +20%）
+    var mod = curSpecies().mod || {};
+    var m = (mod.needCap && mod.needCap[key]) || 1;
+    return Math.round(100 * m);
+  }
+  function needCap(nd) { return needCapOf(nd.key); }
+  // 如厕急迫度顶到上限（如厕条 100%）：这一状态里小腹剧痛，吃下去的东西也几乎填不满肚子
+  function bladderAtMax() {
+    return !!state && state.bladder >= needCapOf("bladder");
+  }
+  // 增加饱食的效果在「剧痛」状态下只按原值的 10% 计；削减不受影响
+  function satietyGain(v) {
+    return v > 0 && bladderAtMax() ? Math.round(v * 0.1) : v;
+  }
+  // 逆流：膀胱充盈度顶到 98% 以上才有判定。这一股疼与如厕急迫度顶到上限的剧痛分开计
+  function refluxLine() { return Math.round(needCapOf("bladderFill") * REFLUX_PCT / 100); }
+  function refluxFloor() { return Math.round(needCapOf("bladderFill") * REFLUX_CLEAR / 100); }
+  // 充盈度掉到下限以下，逆流状态自行退散（上小号、失禁之后都会走到这里）
+  function tickRefluxClear() {
+    if (state && state.reflux && state.bladderFill < refluxFloor()) state.reflux = false;
+  }
+  // 每小时一次的判定：命中就回落一截，独白 / 记录 / 剧痛各来一次；累计超过上限直接垮掉
+  function maybeReflux() {
+    tickRefluxClear();
+    if (state.bladderFill < refluxLine()) return false;
+    if (Math.random() >= REFLUX_CHANCE) return false;
+    var cap = needCapOf("bladderFill");
+    var rb = state.bladderFill;
+    state.bladderFill = clamp(rb - Math.round(cap * REFLUX_DRAIN / 100), 0, cap);
+    state.reflux = true;
+    state.refluxCount = (state.refluxCount || 0) + 1;
+    logLine("evt", "【逆流】小腹里那股压力没往下坠，反倒顶了回去——一阵锐痛顺着腰侧窜开，你扶了下墙才站稳。",
+      [{ t: "膀胱充盈度 " + sign(state.bladderFill - rb), c: "plus" }]);
+    logLine("mind", "你数着秒，等那股疼退下去。它退得很慢，慢得你能听见自己的心跳。", [], "mind");
+    toast("剧痛 · 逆流");
+    if (state.refluxCount > REFLUX_LIMIT) {
+      state.over = true;
+      state.terminal = ENDING_REFLUX;
+      logLine("day", "【" + ENDING_REFLUX.title + "】");
+      return true;
+    }
+    return false;
+  }
+  function needDanger(nd, v) {
+    var cap = needCap(nd), dz = cap * NEED_DANGER / 100;
+    return nd.good ? v <= dz : v >= cap - dz;
+  }
+  function needWarn(nd) {
+    if (nd.key === "full") return "肚子叫得有点响，你想起今天还没正经吃过东西。";
+    if (nd.key === "sleepy") return "眼皮开始打架，站着都能眯过去。";
+    if (nd.key === "clean") return "衣服上带着冷柜的味道，你自己都闻得到。";
+    // 膀胱充盈度走自己的三档提示（50% / 70% / 90%），这里不再重复告急文案
+    if (nd.key === "bladderFill") return null;
+    return "你憋着，脚步不自觉加快了。";
+  }
+  function tickNeeds() {
+    for (var i = 0; i < NEEDS.length; i++) {
+      var nd = NEEDS[i];
+      var before = state[nd.key];
+      state[nd.key] = clamp(before + (NEED_DECAY[nd.key] || 0), 0, needCap(nd));
+      if (!needDanger(nd, before) && needDanger(nd, state[nd.key])) {
+        var warn = needWarn(nd);
+        if (warn) logLine("mind", warn, [], "mind");
+      }
+      // 如厕急迫度顶到上限：小腹一阵剧痛，只在这一刻提示一次（降下去再顶上来才会再提示）
+      if (nd.key === "bladder" && before < needCap(nd) && state[nd.key] >= needCap(nd)) {
+        logLine("mind", "如厕急迫度顶到了上限——小腹一阵剧痛，你几乎直不起腰。", [], "mind");
+        toast("剧痛");
+      }
+      // 剧痛不散：只要如厕急迫度还顶在上限，每个小时都在磨心情
+      if (nd.key === "bladder" && bladderAtMax()) {
+        var painMood = state.mood;
+        applyEff({ mood: -PAIN_MOOD_LOSS });
+        if (state.mood !== painMood) {
+          logLine("mind", "小腹的剧痛一刻没松开，你连喘气都得提着。", [{ t: "心情 " + sign(state.mood - painMood), c: "minus" }], "mind");
+        }
+      }
+      // 膀胱充盈憋到上限就是憋不住了：绝大多数时候当场失禁（充盈清零、清洁度跌到 0）
+      if (nd.key === "bladderFill" && state[nd.key] >= needCap(nd)) {
+        // 千分之一（0.1%）：这一次不是失禁，是真的撑爆了——当场收场
+        if (Math.random() < 0.001) {
+          state.over = true;
+          state.terminal = {
+            title: "结局 · 憋爆了",
+            desc: "小腹深处那声闷响很轻，轻得像谁在里面捏爆了一只气球。洗手间的门就在三步外，你终究没走到——一千次里才轮得到一回的运气，偏偏砸在了今天。便利店冷柜的灯还亮着，关东煮的白气一缕缕往上飘；你被抬上担架的时候，脑子里冒出来的还是那句话：今晚这班谁来顶。医生说这种情况他一辈子也碰不上第二回，值班护士在记录本上写下「自发性膀胱破裂」，笔落得很轻。住院的那些天，你把排班表折好收进抽屉，只学会了两件事：疼要说出口，洗手间要去就去。转角那间小店面，只能留给下一次了。"
+          };
+          logLine("mind", "膀胱充盈度顶到 100%——这一次撑住的不是意志，是那层薄薄的壁。你听见身体里传来一声很闷的响。",
+            [{ t: "膀胱充盈度 撑爆了", c: "minus" }], "mind");
+          return;
+        }
+        state[nd.key] = 0;
+        state.clean = 0;
+        state.bladderWarn = 0;
+        logLine("mind", "到底没走到洗手间——失禁了。身下一凉，膀胱充盈清零，清洁度跌到 0，只能先去冲个澡。",
+          [{ t: "膀胱充盈度 清零", c: "plus" }, { t: "清洁度 跌到 0", c: "minus" }], "mind");
+      }
+      // 逆流：充盈度卡在 98% 以上时的每小时判定；触发也可能直接垮掉，那就停在这里
+      if (nd.key === "bladderFill" && maybeReflux()) return;
+      // 逆流的那股疼也不散：只要还在逆流状态，每个小时都在磨心情（和如厕剧痛各记各的，两股疼可以一起磨）
+      if (nd.key === "bladderFill" && state.reflux) {
+        var refluxMood = state.mood;
+        applyEff({ mood: -PAIN_MOOD_LOSS });
+        if (state.mood !== refluxMood) {
+          logLine("mind", "逆流的那股钝痛还在腰侧来回磨，坐着站着都不得劲。", [{ t: "心情 " + sign(state.mood - refluxMood), c: "minus" }], "mind");
+        }
+      }
+      if (nd.key === "bladderFill") tickBladderWarn();
+    }
+  }
+  // 膀胱充盈度当前该响到第几档（0 = 还没过半）
+  function bladderStageOf() {
+    var v = state.bladderFill, cap = needCapOf("bladderFill"), stage = 0;
+    for (var i = 0; i < BLADDER_WARN.length; i++) {
+      if (v >= cap * BLADDER_WARN[i].pct / 100) stage = i + 1;
+    }
+    return stage;
+  }
+  // 只在跨上更高一档时提示一次；降下去（上小号 / 失禁）就悄悄重新计数
+  function tickBladderWarn() {
+    var stage = bladderStageOf();
+    if (stage > state.bladderWarn) {
+      logLine("mind", "膀胱充盈度到 " + BLADDER_WARN[stage - 1].pct + "%：" + BLADDER_WARN[stage - 1].text, [], "mind");
+    }
+    state.bladderWarn = stage;
+  }
+  function bladderHint() {
+    return state.bladderWarn > 0 ? BLADDER_WARN[state.bladderWarn - 1].hint : "";
+  }
+  function normalizeState() {
+    if (!state) return;
+    if (typeof state.hour !== "number") state.hour = 0;
+    if (typeof state.needBurn !== "number") state.needBurn = 0;
+    if (typeof state.house !== "boolean") state.house = false;
+    if (typeof state.shopOpened !== "boolean") state.shopOpened = false;
+    if (typeof state.promoted !== "boolean") state.promoted = false;
+    // 开局提示（规则说明）只在进入这一局时弹一次；旧存档没有这个标记时补齐为「还没提示过」
+    if (typeof state.rulesTipShown !== "boolean") state.rulesTipShown = false;
+    // 逆流：旧存档没有这两个字段时，补齐为「没在逆流、也还没触发过」
+    if (typeof state.reflux !== "boolean") state.reflux = false;
+    if (typeof state.refluxCount !== "number") state.refluxCount = 0;
+    for (var i = 0; i < NEEDS.length; i++) {
+      var nd = NEEDS[i];
+      if (typeof state[nd.key] !== "number") state[nd.key] = nd.start;
+      state[nd.key] = clamp(state[nd.key], 0, needCap(nd));
+    }
+    // 读档时按当前充盈值对齐提示档位，避免一读档就补报一条旧提示
+    state.bladderWarn = bladderStageOf();
+  }
+
+  function curSpecies() {
+    for (var i = 0; i < SPECIES.length; i++) {
+      if (state && SPECIES[i].id === state.species) return SPECIES[i];
+    }
+    return SPECIES[0];
+  }
+
+  // 棕熊专属：下面这几处文案只有棕熊用删改后的版本，其余种族照旧
+  function isBear() {
+    return !!state && state.species === "bear";
+  }
+
+  // 取文案：棕熊且有专属版本时用专属版，其余种族一律用普通版
+  function speciesText(plain, bear) {
+    return isBear() && bear !== undefined ? bear : plain;
+  }
+
+  function newState(speciesId) {
+    var sp = SPECIES[0];
+    for (var i = 0; i < SPECIES.length; i++) { if (SPECIES[i].id === speciesId) sp = SPECIES[i]; }
+    return {
+      species: sp.id,
+      day: 1,
+      hour: 0,
+      over: false,
+      terminal: null,
+      burn: 0,
+      needBurn: 0,
+      full: 70,
+      sleepy: 20,
+      clean: 80,
+      bladder: 10,
+      bladderFill: 10,
+      bladderWarn: 0,
+      money: sp.base.money,
+      stamina: sp.base.stamina,
+      staminaMax: sp.base.max,
+      mood: sp.base.mood,
+      fame: sp.base.fame,
+      skill: sp.base.skill,
+      log: [],
+      eventCount: 0,
+      shifts: 0,
+      house: false,
+      shopOpened: false,
+      promoted: false,
+      rulesTipShown: false,
+      reflux: false,
+      refluxCount: 0
+    };
+  }
+
+  function applyEff(eff) {
+    var mod = curSpecies().mod || {};
+    var out = [];
+    if (eff.stamina) {
+      var cost = eff.stamina < 0 ? Math.round(eff.stamina * (mod.cost || 1)) : eff.stamina;
+      var b1 = state.stamina;
+      state.stamina = clamp(state.stamina + cost, 0, state.staminaMax);
+      if (state.stamina !== b1) out.push({ t: "体力 " + sign(state.stamina - b1), c: cost > 0 ? "plus" : "minus" });
+    }
+    if (eff.mood) {
+      var mv = eff.mood;
+      if (mv < 0) mv = -Math.round(-mv * (mod.moodLoss || 1));
+      var b4 = state.mood;
+      state.mood = clamp(state.mood + mv, 0, 100);
+      if (state.mood !== b4) out.push({ t: "心情 " + sign(state.mood - b4), c: mv > 0 ? "plus" : "minus" });
+    }
+    if (eff.fame) {
+      var fv = Math.round(eff.fame * (mod.fame || 1));
+      var b3 = state.fame;
+      state.fame = clamp(state.fame + fv, 0, 100);
+      if (state.fame !== b3) out.push({ t: "声望 " + sign(state.fame - b3), c: fv > 0 ? "plus" : "minus" });
+    }
+    if (eff.skill) {
+      var sv = Math.round(eff.skill * (mod.skill || 1));
+      var b5 = state.skill;
+      state.skill = clamp(state.skill + sv, 0, MAX_SKILL);
+      if (state.skill !== b5) out.push({ t: "技能 " + sign(state.skill - b5), c: sv > 0 ? "plus" : "minus" });
+    }
+    if (eff.money) {
+      var mvv = eff.money;
+      if (mvv > 0) mvv = Math.round(mvv * (mod.money || 1));
+      if (eff.night && mod.nightMoney) mvv = Math.round(mvv * mod.nightMoney);
+      state.money += mvv;
+      out.push({ t: "金钱 " + sign(mvv), c: mvv > 0 ? "plus" : "minus" });
+    }
+    for (var ni = 0; ni < NEEDS.length; ni++) {
+      var nd = NEEDS[ni];
+      if (eff.hasOwnProperty(nd.key) && eff[nd.key]) {
+        var nb = state[nd.key];
+        // 饱食增加在「如厕急迫度顶到上限」时只按 10% 计
+        var ng = nd.key === "full" ? satietyGain(eff[nd.key]) : eff[nd.key];
+        state[nd.key] = clamp(nb + ng, 0, needCap(nd));
+        if (state[nd.key] !== nb) {
+          var g = state[nd.key] - nb;
+          out.push({ t: nd.name + " " + sign(g), c: (g > 0) === nd.good ? "plus" : "minus" });
+        }
+      }
+    }
+    // 按当前值的百分比削减（pct 为整数百分比，例如 -90 表示砍掉九成）
+    if (eff.pct) {
+      for (var pi = 0; pi < NEEDS.length; pi++) {
+        var pd = NEEDS[pi];
+        if (eff.pct.hasOwnProperty(pd.key)) {
+          var pb = state[pd.key];
+          var pv = clamp(Math.round(pb * (100 + eff.pct[pd.key]) / 100), 0, needCap(pd));
+          state[pd.key] = pv;
+          if (pv !== pb) out.push({ t: pd.name + " " + sign(pv - pb), c: (pv - pb > 0) === pd.good ? "plus" : "minus" });
+        }
+      }
+    }
+    return out;
+  }
+
+  function logLine(kind, text, deltas, forceKind) {
+    state.log.push({
+      kind: forceKind || kind,
+      text: text,
+      deltas: deltas || [],
+      meta: "第 " + state.day + " 天 · " + timeStr(state.hour)
+    });
+    if (state.log.length > 220) state.log.splice(0, state.log.length - 220);
+  }
+
+  function maybeEvent() {
+    if (Math.random() > 0.08) return;
+    var pool = EVENTS.filter(function (e) { return !usedEvents[e.id] && !(e.bearHide && isBear()); });
+    if (!pool.length) { usedEvents = {}; return; }
+    var ev = pool[Math.floor(Math.random() * pool.length)];
+    usedEvents[ev.id] = true;
+    state.eventCount++;
+    var d = applyEff(ev.eff);
+    logLine("evt", "【突发】" + speciesText(ev.text, ev.bearText), d);
+  }
+
+  function buildActions() {
+    var out = [];
+    for (var i = 0; i < ACTIONS.length; i++) {
+      var a = ACTIONS[i];
+      if (a.w && a.w.indexOf(bandOf(state.hour).id) < 0) continue;
+      if (a.once && state[a.once]) continue;   // 一次性行动：做过了就不再出现（例如已经买下的房子）
+      if (a.showIf && !a.showIf()) continue;   // 彩蛋类行动：条件不满足时整条不出现，也不留灰色按钮
+      var disabled = false, msg = "";
+      if (a.minDay && state.day < a.minDay) { disabled = true; msg = "第 " + a.minDay + " 天解锁"; }
+      if (a.fameNeed && state.fame < a.fameNeed) { disabled = true; msg = "声望 ≥ " + a.fameNeed + " 解锁"; }
+      if (a.moneyNeed && state.money < a.moneyNeed) { disabled = true; msg = "存款攒到 " + a.moneyNeed + " 元才能买"; }
+      if (a.eff && a.eff.stamina < 0) {
+        var cost = Math.round(a.eff.stamina * (curSpecies().mod.cost || 1));
+        if (state.stamina + cost < 0) { disabled = true; msg = "体力不够，先歇会儿"; }
+      }
+      out.push({ a: a, disabled: disabled, msg: msg });
+    }
+    return out;
+  }
+
+  function pickAction(idx) {
+    if (!state || state.over) return;
+    var item = curActions[idx];
+    if (!item || item.disabled) return;
+    var a = item.a;
+    // 带子选项的行动：先展开，等玩家挑一个
+    if (a.opts) {
+      subOpen = (subOpen === a.id) ? null : a.id;
+      renderActions();
+      return;
+    }
+    subOpen = null;
+    execAction(a, a, a.name);
+  }
+
+  // 子选项：执行对应分支；optId 为空表示取消，不消耗时间
+  function pickSub(idx, optId) {
+    if (!state || state.over) return;
+    var item = curActions[idx];
+    if (!item || item.disabled || !item.a.opts) return;
+    var a = item.a;
+    if (!optId) { subOpen = null; renderActions(); return; }
+    var opt = null;
+    for (var o = 0; o < a.opts.length; o++) { if (a.opts[o].id === optId) opt = a.opts[o]; }
+    if (!opt) return;
+    subOpen = null;
+    execAction(a, opt, a.name + " · " + opt.name);
+  }
+
+  // 真正结算一次行动：效果 = 行动/子选项的 eff + pct
+  function execAction(a, src, label) {
+    var eff = {};
+    if (src.eff) { for (var k in src.eff) { if (src.eff.hasOwnProperty(k)) eff[k] = src.eff[k]; } }
+    if (src.pct) eff.pct = src.pct;
+    if (a.night) { eff.night = 1; state.shifts++; }
+    var d = applyEff(eff);
+    if (a.once) state[a.once] = true;   // 一次性行动：记下已完成，买房之后房租不再扣
+    logLine("act", "你选择了「" + label + "」。" + (src === a ? actDesc(a) : (src.desc || a.desc)), d);
+    if (a.egg) {                 // 彩蛋：不走随机事件与需求推进，直接收尾到「转角那间毛茸茸」
+      triggerCornerEnding();
+      save(true);
+      render();
+      return;
+    }
+    // 不耗时的行动（上大号 / 上小号）：时间不推进，也不走这一小时的需求衰减、剧痛结算与随机事件
+    if (src.noTime) {
+      tickBladderWarn();             // 充盈清零等变化后，顶栏那一档提示跟着复位
+      tickRefluxClear();             // 上小号把充盈度清零后，逆流状态跟着退掉
+      save(true);
+      render();
+      return;
+    }
+    maybeEvent();
+    tickNeeds();
+    advance();
+    save(true);
+    if (state.over && state.terminal && !endingShown) {
+      renderEnding(state.terminal);
+    }
+    render();
+  }
+
+  function advance() {
+    if (state.over) return;
+    state.hour++;
+    if (state.hour >= HOURS_PER_DAY) {
+      state.hour = HOURS_PER_DAY - 1;
+      settleDay();
+    }
+  }
+
+  function settleDay() {
+    logLine("day", "—— 第 " + state.day + " 天，灯关了 ——");
+
+    var beforeMoney = state.money;
+    var cost = state.house ? LIVING_COST : DAILY_COST;   // 房子是自己的，就不用再交房租
+    state.money -= cost;
+    state.stamina = clamp(state.stamina + 45, 0, state.staminaMax);
+    applyEff({ mood: -3 });
+    logLine("day", state.house
+        ? "日结算：水电、餐费共 -" + LIVING_COST + "，房子是自己的了，房租那 " + RENT_COST + " 元省下来。睡一觉体力回一点，日子磨掉 3 点心情。"
+        : "日结算：房租、水电、餐费共 -" + DAILY_COST + "，睡一觉体力回一点，日子磨掉 3 点心情。",
+      [{ t: "金钱 " + sign(state.money - beforeMoney), c: "minus" }]);
+
+    if (state.money < 0) {
+      applyEff({ fame: -5, mood: -8 });
+      logLine("day", "账户见了底，你在记账本上画了个叉。", [{ t: "声望 -5", c: "minus" }, { t: "心情 -8", c: "minus" }]);
+    }
+    if (state.mood <= 0) {
+      state.burn++;
+      logLine("day", "你撑着没说话，但耳朵已经耷下来了。", [{ t: "连续撑不住 " + state.burn + " 天", c: "minus" }]);
+    } else if (state.mood > 20) {
+      state.burn = 0;
+    }
+
+    // 生理需求：一天下来哪条没被照顾，身体就在夜里跟你算账
+    // 膀胱充盈度不在这条判定里：它憋到 100% 会当场失禁，另行结算
+    var alarms = [];
+    for (var ai = 0; ai < NEEDS.length; ai++) {
+      if (NEEDS[ai].key === "bladderFill") continue;
+      if (needDanger(NEEDS[ai], state[NEEDS[ai].key])) alarms.push(NEEDS[ai]);
+    }
+    if (alarms.length) {
+      state.needBurn++;
+      var penalty = { mood: -4 };
+      var names = [];
+      for (var aj = 0; aj < alarms.length; aj++) {
+        names.push(alarms[aj].name);
+        if (alarms[aj].key === "clean") penalty.fame = (penalty.fame || 0) - 3;
+        if (alarms[aj].key === "full") penalty.stamina = (penalty.stamina || 0) - 8;
+      }
+      applyEff(penalty);
+      logLine("day", "一整天里，" + names.join("、") + "都一直不太对劲。你翻来覆去，睡得并不安稳。",
+        [{ t: "需求告急：" + names.join("、"), c: "minus" }, { t: "连续 " + state.needBurn + " 天", c: "minus" }]);
+    } else {
+      state.needBurn = 0;
+    }
+
+    logLine("mind", MONOLOGUES[Math.floor(Math.random() * MONOLOGUES.length)], [], "mind");
+
+    if (MILESTONES[state.day]) MILESTONES[state.day]();
+
+    if (checkTerminal()) return;
+    if (shopGoalMet()) {                 // 盘下小店：改成一次性提示，不再收尾，日子继续过
+      if (!state.shopOpened) { state.shopOpened = true; promptShopOpened(); }
+    }
+    if (state.fame >= 85 && state.skill >= 22) {   // 升职路线同样只给一条提示，不再收尾
+      if (!state.promoted) { state.promoted = true; promptPromoted(); }
+    }
+
+    state.day++;
+    state.hour = 0;
+    logLine("day", "第 " + state.day + " 天，闹钟响的时候，" + speciesText("尾巴先醒了。", "你先醒了。"));
+  }
+
+  function checkTerminal() {
+    if (state.money < -200) {
+      state.over = true;
+      state.terminal = {
+        title: "结局 · 连夜跑路",
+        desc: "欠款滚到了记账本翻不动的那一页。你在凌晨退了房，把工服叠好放在床头，留了张字条给店长。城南的车票很便宜，二十块钱，坐到哪儿都行。窗外路灯一盏一盏退下去，你把脸贴在玻璃上，这件事谁也没告诉。"
+      };
+      return true;
+    }
+    if (state.burn >= 3) {
+      state.over = true;
+      state.terminal = {
+        title: "结局 · 兽医诊室的一周",
+        desc: "你在夜班中途靠着货架滑了下去。诊室的灯很白，医生说休息两周，别再喝冰的。店长替你垫了医药费，同事轮流来看你，带的水果堆了半张床。你盯着天花板想，原来撑不住也是一件要说出口的事。"
+      };
+      return true;
+    }
+    if (state.needBurn >= 3) {
+      state.over = true;
+      state.terminal = {
+        title: "结局 · 身体先撑不住了",
+        desc: "连着好几天，你都在拿身体换班：饭是凉的，澡是跳过的，觉是硬撑的。终于有天早上，你没能从床上坐起来——四肢发软，脑子像塞了棉花。路边摊的老板帮你叫了车，你在诊所的塑料椅上坐了一下午，把手机壁纸换成了一句「先吃饭」。工服搭在椅背上，领口有一圈洗不净的灰，你第一次认真看清它。"
+      };
+      return true;
+    }
+    return false;
+  }
+
+  // 盘下小店的达成不再是结局：只在第一次达到条件时给一条提示，游戏不结束
+  function shopGoalMet() {
+    return state.money >= GOAL_MONEY && state.fame >= 55 && state.mood >= 30;
+  }
+
+  function promptShopOpened() {
+    logLine("day", "【提示】你盘下了老城区转角那间小店面。刷墙、买二手冰柜、把招牌挂上去那天，下着小雨。这是来这里以后第一次，你觉得那盏灯是为自己亮的——日子还长，明天照旧。");
+    toast("你盘下了老城区转角那间小店面——游戏继续。");
+  }
+
+  // 升职路线也不再是结局：第一次达到条件时给一条提示，游戏继续
+  function promptPromoted() {
+    logLine("day", "【提示】店长把钥匙交到了你手上。你成了兽都南城最年轻的店长，排班表上第一次由你签字。上任第一件事是把夜班补贴调高了一点，第二件事是把交接本换成更厚的——凌晨的班总得有人顶，但不能总是白顶。日子照旧，明天接着上。");
+    toast("你升上了店长，成了「夜班之星」——游戏继续。");
+  }
+
+  // 「转角那间毛茸茸」这一条结局的文案：原来的 finish() 收尾与彩蛋行动共用同一份
+  var ENDING_CORNER = {
+    title: "结局 · 转角那间毛茸茸",
+    desc: "你盘下了老城区转角那间空屋子。刷墙、买二手冰柜、把亲手写的招牌挂上去那天，下着小雨。第一天只卖出去六份甜品，其中三份是同事买的。你在柜台后面站了很久，把「营业中」的牌子翻过来，又翻回去——这是来这里以后第一次，你觉得那盏灯是为自己亮的。"
+  };
+
+  // 「逆流」累计超过 2 次：身体先撑不住，这一局到此为止
+  var ENDING_REFLUX = {
+    title: "结局 · 身体垮掉",
+    desc: "第一次逆流你只当是憋久了，捂着腰站了会儿就过去了；第二次，你在洗手间门口站了很久，才把那一口气喘匀。等到第三次，那股压力从小腹一路顶回腰侧，眼前一黑，你顺着冷柜滑坐在地上，手里还攥着没扫完的那袋关东煮。同事把你扶到椅子上的时候，你连一句整话都说不出来。医生看着片子说，膀胱里的东西反复往回顶，上头的路已经磨伤了，再这么熬夜班，就是拿肾在换钱。你把工服叠好放在床头，第一次没有定第二天的闹钟。"
+  };
+
+  // 彩蛋「装修更好的小店」点下去：当场走到这条结局，日子到这里为止
+  function triggerCornerEnding() {
+    state.over = true;
+    state.terminal = ENDING_CORNER;
+    logLine("day", "【" + ENDING_CORNER.title + "】");
+    renderEnding(ENDING_CORNER);
+  }
+
+  function finish() {
+    state.over = true;
+    var money = state.money, fame = state.fame, skill = state.skill;
+    var e;
+    if (money >= GOAL_MONEY && fame >= 55 && state.mood >= 30) {
+      e = ENDING_CORNER;
+    } else if (fame >= 85 && skill >= 22) {
+      e = {
+        title: "结局 · 夜班之星",
+        desc: "店长把钥匙交到了你手上。你成了兽都南城最年轻的店长，排班表上第一次由你签字。上任第一件事是把夜班补贴调高了一点，第二件事是把交接本换成更厚的。你说，凌晨的班总得有人顶，但不能总是白顶。"
+      };
+    } else if (money >= GOAL_MONEY) {
+      e = {
+        title: "结局 · 攒够了，门还没开",
+        desc: "钱凑到了数，押金也交得起，可你站在那间空屋子门口，终究没把租约签下去。名声还差一点，手艺也差一点，你自己心里清楚。你把钱存成定期，写在便签上贴冰箱：明年三月，再来一次。"
+      };
+    } else if (fame < 40 || state.mood < 30) {
+      e = {
+        title: "结局 · 就这样吧",
+        desc: "日子一天天过，钱没攒下多少，人也没什么精神。你把工服挂进柜子，周末睡到下午三点，醒了就刷手机。日子还能过，你没有辞职，也没有再想那间空屋子。偶尔路过老城区，你会加快脚步。"
+      };
+    } else {
+      e = {
+        title: "结局 · 平凡而毛茸茸的日子",
+        desc: "没有大起大落。房租按时交了，班一次没落" + speciesText("，尾巴偶尔被门夹。", "。") + "某个晚上你算完账，把零钱按面值排好，笑了出声。你在冰箱门上添了一行小字：还差多少，明年继续。"
+      };
+    }
+
+    logLine("day", "【" + e.title + "】");
+    renderEnding(e);
+  }
+
+  function setBar(barId, valId, val, max, text) {
+    el(barId).style.width = clamp(Math.round(val / max * 100), 0, 100) + "%";
+    el(valId).textContent = text;
+  }
+
+  function renderStats() {
+    var sp = curSpecies();
+    el("heroFace").textContent = sp.emoji;
+    el("heroName").innerHTML = sp.name + ' <em>' + sp.role + '</em>';
+    el("heroRole").textContent = sp.place;
+    el("heroTrait").textContent = sp.trait;
+
+    setBar("barStamina", "valStamina", state.stamina, state.staminaMax, Math.round(state.stamina) + "/" + state.staminaMax);
+    setBar("barMood", "valMood", state.mood, 100, Math.round(state.mood) + "/100");
+    setBar("barFame", "valFame", state.fame, 100, Math.round(state.fame) + "/100");
+    setBar("barSkill", "valSkill", state.skill, 30, state.skill + "/30");
+
+    var mb = el("moneyBox");
+    mb.innerHTML = "存款 <b>" + state.money + "</b> 元　·　日支出 " +
+      (state.house ? LIVING_COST + "（无房租）" : DAILY_COST);
+    mb.className = "money" + (state.money < 0 ? " neg" : "");
+    var pct = clamp(Math.round(state.money / GOAL_MONEY * 100), 0, 100);
+    el("goalFill").style.width = pct + "%";
+    el("goalPct").textContent = pct + "%";
+
+    for (var si = 0; si < NEEDS.length; si++) {
+      var sd = NEEDS[si], sv = Math.round(state[sd.key]);
+      var ncap = needCap(sd);
+      setBar(sd.bar, sd.val, sv, ncap, sv + "/" + ncap);
+    }
+
+    var hint = "";
+    var worst = null;
+    for (var wk = 0; wk < NEEDS.length; wk++) {
+      if (needDanger(NEEDS[wk], state[NEEDS[wk].key])) { worst = NEEDS[wk]; break; }
+    }
+    if (state.stamina <= 12) hint = speciesText("尾巴都抬不起来了，先歇会儿", "腿都抬不起来了，先歇会儿");
+    else if (state.mood <= 15) hint = "今天笑不出来，注意心情";
+    else if (state.money < 0) hint = "账户是负的，得赶紧补";
+    else if (bladderAtMax()) hint = "如厕急迫度到顶，小腹一阵剧痛";
+    else if (state.reflux) hint = "逆流来回顶，小腹一阵阵剧痛";
+    else if (worst) hint = worst.key === "bladderFill" ? bladderHint() : worst.name + "告急，先照顾一下自己";
+    else if (state.bladderWarn > 0) hint = bladderHint();
+    el("stateHint").textContent = hint;
+  }
+
+  function effChips(eff) {
+    var out = "";
+    function chip(t, cls) { out += '<span class="' + (cls || "") + '">' + t + '</span>'; }
+    if (eff.stamina) chip("体力 " + sign(eff.stamina), eff.stamina > 0 ? "plus" : "minus");
+    if (eff.money) chip("金钱 " + sign(eff.money), eff.money > 0 ? "plus" : "minus");
+    if (eff.fame) chip("声望 " + sign(eff.fame), eff.fame > 0 ? "plus" : "minus");
+    if (eff.skill) chip("技能 " + sign(eff.skill), eff.skill > 0 ? "plus" : "minus");
+    if (eff.mood) chip("心情 " + sign(eff.mood), eff.mood > 0 ? "plus" : "minus");
+    for (var ci = 0; ci < NEEDS.length; ci++) {
+      var cd = NEEDS[ci];
+      if (eff[cd.key]) {
+        // 饱食在「剧痛」状态下按实际生效的 10% 显示，避免卡片与实际结算不符
+        var cv = cd.key === "full" ? satietyGain(eff[cd.key]) : eff[cd.key];
+        chip(cd.name.replace("度", "") + " " + sign(cv), (cv > 0) === cd.good ? "plus" : "minus");
+      }
+    }
+    if (eff.pct) {
+      for (var qi = 0; qi < NEEDS.length; qi++) {
+        var qd = NEEDS[qi];
+        if (eff.pct.hasOwnProperty(qd.key)) {
+          var qp = Math.round(eff.pct[qd.key]);
+          chip(qd.name.replace("度", "") + " " + (qp > 0 ? "+" : "") + qp + "%", (qp > 0) === qd.good ? "plus" : "minus");
+        }
+      }
+    }
+    return out;
+  }
+
+  // 行动卡片上的效果标签；带子选项的行动只提示「二选一」
+  function actionChips(a) {
+    if (a.opts) return '<span>大 / 小 二选一</span>';
+    var e = {};
+    if (a.eff) { for (var k in a.eff) { if (a.eff.hasOwnProperty(k)) e[k] = a.eff[k]; } }
+    if (a.pct) e.pct = a.pct;
+    return effChips(e);
+  }
+
+  // 行动卡与行动记录里的开场白：有了自己的房子，出租楼那盏坏灯就不必再提
+  function actDesc(a) {
+    if (state.house && a.descOwn !== undefined) return a.descOwn;
+    return a.desc;
+  }
+
+  function subMenuHtml(i, a) {
+    var h = '<div class="submenu"><div class="sh">挑一个，不占时间（也可以取消）</div><div class="subopts">';
+    for (var o = 0; o < a.opts.length; o++) {
+      var op = a.opts[o];
+      var e = {};
+      if (op.eff) { for (var k in op.eff) { if (op.eff.hasOwnProperty(k)) e[k] = op.eff[k]; } }
+      if (op.pct) e.pct = op.pct;
+      h += '<button type="button" class="act sub" data-i="' + i + '" data-opt="' + op.id + '">' +
+        '<span class="an">' + op.name + '</span>' +
+        '<span class="ad">' + op.desc + '</span>' +
+        '<span class="ef">' + effChips(e) + '</span>' +
+        '</button>';
+    }
+    h += '<button type="button" class="act sub cancel" data-i="' + i + '" data-opt="">先不去，回去再忍忍</button>';
+    h += '</div></div>';
+    return h;
+  }
+
+  function renderActions() {
+    curActions = buildActions();
+    if (subOpen) {
+      var alive = false;
+      for (var q = 0; q < curActions.length; q++) {
+        if (curActions[q].a.id === subOpen && !curActions[q].disabled) alive = true;
+      }
+      if (!alive) subOpen = null;
+    }
+    el("actTitle").textContent = timeStr(state.hour) + " 能做什么";
+    var html = "";
+    for (var i = 0; i < curActions.length; i++) {
+      var it = curActions[i], a = it.a;
+      var cls = "act" + (a.tag ? " tag" : "") + ((a.fameNeed || a.minDay || a.need || a.moneyNeed) ? " key" : "");
+      if (a.opts && subOpen === a.id) cls += " subopen";
+      var win = windowOf(a);
+      html += '<button type="button" class="' + cls + '" data-i="' + i + '"' + (it.disabled ? " disabled" : "") + '>' +
+        '<span class="an">' + a.name + (a.opts && subOpen === a.id ? "（选一个）" : "") + '</span>' +
+        '<span class="ad">' + (it.disabled ? ("🔒 " + it.msg) : actDesc(a)) + '</span>' +
+        '<span class="ef">' + (win ? '<span class="win">' + win + '</span>' : "") + actionChips(a) + '</span>' +
+        '</button>';
+      if (a.opts && subOpen === a.id) html += subMenuHtml(i, a);
+    }
+    el("actBox").innerHTML = html;
+    var btns = el("actBox").querySelectorAll("button.act");
+    for (var j = 0; j < btns.length; j++) {
+      if (btns[j].getAttribute("data-opt") !== null) continue;
+      btns[j].addEventListener("click", function () {
+        pickAction(parseInt(this.getAttribute("data-i"), 10));
+      });
+    }
+    var subs = el("actBox").querySelectorAll("button.act.sub");
+    for (var s = 0; s < subs.length; s++) {
+      subs[s].addEventListener("click", function () {
+        pickSub(parseInt(this.getAttribute("data-i"), 10), this.getAttribute("data-opt"));
+      });
+    }
+  }
+
+  function renderLog() {
+    var box = el("logBox");
+    var html = "";
+    for (var i = 0; i < state.log.length; i++) {
+      var e = state.log[i];
+      var cls = "le " + (e.kind === "act" ? "act" : (e.kind === "evt" ? "evt" : (e.kind === "mind" ? "mind" : "day")));
+      html += '<div class="' + cls + '">' +
+        '<div class="meta">' + (e.meta || "") + '</div>' +
+        '<div>' + e.text + '</div>';
+      if (e.deltas && e.deltas.length) {
+        html += '<div class="deltas">';
+        for (var d = 0; d < e.deltas.length; d++) {
+          html += '<span class="' + (e.deltas[d].c || "") + '">' + e.deltas[d].t + '</span>';
+        }
+        html += '</div>';
+      }
+      html += '</div>';
+    }
+    box.innerHTML = html;
+    el("logCount").textContent = "共 " + state.log.length + " 条";
+  }
+
+  function renderHeader() {
+    el("dayChip").textContent = "第 " + state.day + " 天";
+    el("slotChip").textContent = "现在 " + timeStr(state.hour);
+  }
+
+  function render() {
+    if (!state) return;
+    renderHeader();
+    renderStats();
+    if (!state.over) renderActions();
+    renderLog();
+  }
+
+  function renderEnding(e) {
+    endingShown = true;
+    el("endTitle").textContent = e.title;
+    el("endDesc").textContent = e.desc;
+    el("endStats").innerHTML =
+      '<div class="es"><span>最终存款</span><b>' + state.money + ' 元</b></div>' +
+      '<div class="es"><span>声望</span><b>' + Math.round(state.fame) + '</b></div>' +
+      '<div class="es"><span>技能</span><b>' + state.skill + '</b></div>' +
+      '<div class="es"><span>心情</span><b>' + Math.round(state.mood) + '</b></div>' +
+      '<div class="es"><span>夜班次数</span><b>' + state.shifts + ' 次</b></div>' +
+      '<div class="es"><span>随机事件</span><b>' + state.eventCount + ' 次</b></div>';
+    el("endOverlay").classList.remove("hide");
+  }
+
+  function save(silent) {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({ state: state, used: usedEvents }));
+      if (!silent) toast("已存档");
+    } catch (err) {
+      if (!silent) toast("存档失败：浏览器本地存储不可用");
+    }
+  }
+
+  // 进入游戏时只提示一次：这一局第一次进入主界面时弹出规则说明，之后（再次进入、读档、同一局内）
+  // 都不再出现；已经走完的一局不再补弹。标记写进存档，随局内进度一起保存
+  function showRulesTip() {
+    if (!state || state.over || state.rulesTipShown) return;
+    state.rulesTipShown = true;
+    el("rulesTipOverlay").classList.remove("hide");
+    save(true);
+  }
+
+  function load(silent) {
+    var raw = null;
+    try { raw = localStorage.getItem(SAVE_KEY); } catch (err) { raw = null; }
+    if (!raw) { if (!silent) toast("没有找到存档"); return false; }
+    var data;
+    try { data = JSON.parse(raw); } catch (err) { if (!silent) toast("存档损坏"); return false; }
+    if (!data || !data.state || typeof data.state.mood !== "number") { if (!silent) toast("存档不完整"); return false; }
+    state = data.state;
+    usedEvents = data.used || {};
+    normalizeState();
+    subOpen = null;
+    el("startOverlay").classList.add("hide");
+    el("endOverlay").classList.add("hide");
+    endingShown = false;
+    if (state.over) {
+      renderEnding(state.terminal || {
+        title: "结局 · 上一局的结果",
+        desc: "这是你已经走完的一局。想换个活法，就重开一次。"
+      });
+    }
+    render();
+    showRulesTip();
+    if (!silent) toast("已读档");
+    return true;
+  }
+
+  function toast(msg) {
+    var t = document.createElement("div");
+    t.textContent = msg;
+    t.style.cssText = "position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:rgba(35,30,48,.95);" +
+      "border:1px solid rgba(255,255,255,.18);color:#efeaf5;padding:9px 18px;border-radius:999px;font-size:13px;z-index:99;";
+    if (document.body) document.body.appendChild(t);
+    setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 1700);
+  }
+
+  function renderPick() {
+    var g = el("pickGrid");
+    var html = "";
+    for (var i = 0; i < SPECIES.length; i++) {
+      var s = SPECIES[i];
+      html += '<button type="button" class="pick' + (s.id === pickedSpecies ? " sel" : "") + '" data-s="' + s.id + '">' +
+        '<span class="pe">' + s.emoji + '</span>' +
+        '<span class="pn">' + s.name + '</span>' +
+        '<span class="pd">' + s.desc + '</span>' +
+        '<span class="pt">' + s.trait + '</span>' +
+        '</button>';
+    }
+    g.innerHTML = html;
+    var ps = g.querySelectorAll("button.pick");
+    for (var j = 0; j < ps.length; j++) {
+      ps[j].addEventListener("click", function () {
+        pickedSpecies = this.getAttribute("data-s");
+        renderPick();
+      });
+    }
+  }
+
+  function startNew() {
+    state = newState(pickedSpecies);
+    usedEvents = {};
+    endingShown = false;
+    subOpen = null;
+    el("startOverlay").classList.add("hide");
+    el("endOverlay").classList.add("hide");
+    logLine("mind", "你在" + curSpecies().place + "醒来。闹钟响到第二遍，你才伸手按掉。冰箱上贴着这个月的房租单。", [], "mind");
+    render();
+    save(true);
+    showRulesTip();
+  }
+
+  function bind() {
+    el("btnSave").addEventListener("click", function () {
+      if (state && !state.over) save(false); else toast("当前没有可存档的进度");
+    });
+    el("btnLoad").addEventListener("click", function () { load(false); });
+    el("btnLoad2").addEventListener("click", function () { load(false); });
+    el("btnStart").addEventListener("click", startNew);
+    el("btnAgain").addEventListener("click", function () {
+      el("endOverlay").classList.add("hide");
+      el("startOverlay").classList.remove("hide");
+      renderPick();
+    });
+    el("btnHelp").addEventListener("click", function () { el("helpOverlay").classList.remove("hide"); });
+    el("btnHelp2").addEventListener("click", function () { el("helpOverlay").classList.remove("hide"); });
+    el("btnCloseHelp").addEventListener("click", function () { el("helpOverlay").classList.add("hide"); });
+    el("btnTipOk").addEventListener("click", function () { el("rulesTipOverlay").classList.add("hide"); });
+    el("btnRestart").addEventListener("click", function () {
+      if (window.confirm("重开会清空当前这局的进度，确定吗？")) {
+        el("endOverlay").classList.add("hide");
+        el("startOverlay").classList.remove("hide");
+        renderPick();
+      }
+    });
+  }
+
+  renderPick();
+  bind();
+  try { if (localStorage.getItem(SAVE_KEY)) el("btnLoad2").textContent = "读取存档（有进度）"; } catch (err) {}
+})();
+</script>
+</body>
+</html>
